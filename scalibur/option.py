@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
+from scalibur.singleton import singleton
+
 T = TypeVar('T')
 
 
@@ -47,7 +49,7 @@ class Option(ABC, Generic[T]):
 
 class Some(Option[T]):
     __match_args__ = ("_value",)
-    __slots__ = ("_value")
+    __slots__ = ("_value",)
 
     def __init__(self, value: T) -> None:
         self._value = value
@@ -62,6 +64,7 @@ class Some(Option[T]):
         return str(self._value)
 
 
+@singleton
 class Nothing(Option[T]):
     def get(self) -> T:
         raise NotImplementedError
