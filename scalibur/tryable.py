@@ -69,7 +69,7 @@ class Success(Tryable[T]):
 
     def __init__(self, value: T) -> None:
         self._value = value
-        self._has_next: bool = True
+        self._has_next = True
 
     def get(self) -> T:
         return self._value
@@ -88,17 +88,17 @@ class Success(Tryable[T]):
         return str(self._value)
 
 
-class Failure(Tryable[T]):
+class Failure(Tryable[Exception]):
     __slots__ = ()
     __match_args__ = ("_value",)
 
     def __init__(self, exception: Exception) -> None:
         self._value = exception
 
-    def get(self) -> T:
+    def get(self) -> Exception:
         raise self._value
 
-    def __next__(self) -> T:
+    def __next__(self) -> Exception:
         raise StopIteration
 
     def __repr__(self) -> str:
