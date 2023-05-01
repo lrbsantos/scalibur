@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-from scalibur.singleton import singleton
+from scalibur.decorator import singleton
 
 T = TypeVar('T')
 
@@ -66,5 +66,9 @@ class Some(Option[T]):
 
 @singleton
 class Nothing(Option[T]):
+    """A Nothing type is a representation of non-existent values.
+
+    *Note:* instances of Nothing are singleton.
+    """
     def get(self) -> T:
         raise NotImplementedError
