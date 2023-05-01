@@ -1,5 +1,4 @@
 from abc import abstractmethod, ABC
-from functools import wraps
 from typing import Callable, Generic, TypeVar
 
 from scalibur.option import Option, Some, Nothing
@@ -120,8 +119,6 @@ def Try(f: Callable[..., T]) -> Callable[..., Tryable[T]]:
 
     :return: a callable as a Tryable object.
     """
-
-    @wraps(f)
     def wrapper(*args, **kwargs) -> Tryable:
         try:
             return Success(f(*args, **kwargs))
