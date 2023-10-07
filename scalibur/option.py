@@ -37,7 +37,7 @@ class Option(ABC, Generic[T]):
 
         :return: true if the option is Nothing, false otherwise.
         """
-        return isinstance(self, Nothing)
+        return isinstance(self, Nothing.__wrapped__)
 
     @abstractmethod
     def get(self) -> T:
