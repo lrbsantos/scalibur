@@ -1,21 +1,26 @@
-class _Singleton:
-    _singletons = {}
+class _SingletonWrapper:
+    """
+    A singleton wrapper class. Its instances would be created
+    for each decorated class.
 
-    @staticmethod
-    def apply(cls):
-        if cls not in _Singleton._singletons:
-            _Singleton._singletons[cls] = _Singleton(cls)
-        return _Singleton._singletons[cls]
+    Inspired by https://github.com/Kemaweyan/singleton_decorator
+    """
 
     def __init__(self, cls):
-        self._cls = cls
+        self.__wrapped__ = cls
         self._instance = None
 
     def __call__(self, *args, **kwargs):
+        """Returns a single instance of decorated class xxx"""
         if self._instance is None:
-            self._instance = self._cls(*args, **kwargs)
+            self._instance = self.__wrapped__(*args, **kwargs)
         return self._instance
 
 
 def singleton(cls):
-    return _Singleton.apply(cls)
+    """
+    A singleton decorator. Returns wrapper objects. A call on that object
+    returns a single instance object of decorated class. Use the __wrapped__
+    attribute to access decorated class directly in unit tests.
+    """
+    return _SingletonWrapper(cls)
