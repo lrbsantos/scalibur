@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Callable, Generic, TypeVar
+from typing import Callable, Generic, TypeVar, Union
 
 from scalibur.option import Option, Some, Nothing
 
@@ -7,7 +7,42 @@ T = TypeVar('T')
 
 
 class Tryable(ABC, Generic[T]):
+    """
+    The `Tryable` type represents a computation that may either result in an exception,
+    or return a successfully computed value. 
+ 
+    Instances of `Tryable[T]`, are either an instance of Success[T] or Failure[T].
+
+    For example, `Try` can be used to perform division on a user-defined input, without
+    the need to do explicit exception-handling in all of the places that an exception
+    might occur.
+    
+    Example:
+    >>> from scalibur.tryable import Try, Success, Failure
+    >>> from operator import truediv
+    >>>
+    >>> def divide():
+    >>>   def div(dividend: str, divisor: str):
+    >>>     return truediv(int(dividend), int(divisor))
+    >>>
+    >>>   dividend = input("Enter an Int that you'd like to divide:\n")
+    >>>   divisor = input("Enter an Int that you'd like to divide by:\n")
+    >>>   problem = Try(div)(dividend, divisor)
+    >>>
+    >>>   match problem:
+    >>>     case Success(v):
+    >>>       print(f"Result of {dividend} / {divisor}  is {v}")
+    >>>     case Failure(e):
+    >>>       print("You must've divided by zero or entered something that's not an Int. Try again!")
+    >>>       print(f"Info from the exception: {e}")
+    >>>
+    >>> divide()
+    """
     __slots__ = ("_value",)
+
+    def __init__(self, value) -> None:
+        super().__init__()
+        self._value = value
 
     @property
     def is_failure(self) -> bool:
@@ -33,7 +68,7 @@ class Tryable(ABC, Generic[T]):
         """
         raise NotImplementedError
 
-    def failed(self) -> "Tryable[Exception]":
+    def failed(self) -> Union["Success", "Failure"]:
         """Inverts this `Tryable`. If this is a `Failure`, returns its exception wrapped in a `Success`.
         If this is a `Success`, returns a `Failure` containing an `UnsupportedOperationException`.
 
@@ -68,7 +103,7 @@ class Success(Tryable[T]):
     __match_args__ = ("_value",)
 
     def __init__(self, value: T) -> None:
-        self._value = value
+        super().__init__(value)
         self._has_next = True
 
     def get(self) -> T:
@@ -93,7 +128,7 @@ class Failure(Tryable[Exception]):
     __match_args__ = ("_value",)
 
     def __init__(self, exception: Exception) -> None:
-        self._value = exception
+        super().__init__(exception)
 
     def get(self) -> Exception:
         raise self._value
